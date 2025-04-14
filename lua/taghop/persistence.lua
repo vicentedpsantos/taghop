@@ -11,6 +11,14 @@ function M.get_project_root()
   return cwd
 end
 
+function M.get_project_id(project_path)
+  local project_name = vim.fn.fnamemodify(project_path, ':t')
+  local utils = require('taghop.utils')
+  local path_hash = utils.simple_hash(project_path)
+
+  return project_name .. "_" .. path_hash
+end
+
 function M.get_storage_path()
   local data_path = vim.fn.stdpath('data')
   local taghop_dir = data_path .. '/taghop'
@@ -20,9 +28,8 @@ function M.get_storage_path()
   end
 
   local project_root = M.get_project_root()
-  local project_id = vim.fn.substitute(project_root, '/', '_', 'g')
-  project_id = vim.fn.substitute(project_id, ':', '_', 'g')
-
+  local project_id = M.get_project_id(project_root)
+  
   return taghop_dir .. '/' .. project_id .. '.json'
 end
 
@@ -49,6 +56,8 @@ function M.load_tags()
   local storage_path = M.get_storage_path()
   local tags = require('taghop.tags')
 
+  tags.tagged_files = {}
+
   local file = io.open(storage_path, 'r')
   if not file then
     return
@@ -60,7 +69,12 @@ function M.load_tags()
   if content and content ~= '' then
     local success, decoded = pcall(vim.fn.json_decode, content)
     if success and type(decoded) == 'table' then
-      tags.tagged_files = decoded
+      -- Check if files still exist before restoring tags
+      for _, file_path in ipairs(decoded) do
+        if vim.fn.filereadable(file_path) == 1 then
+          table.insert(tags.tagged_files, file_path)
+        end
+      end
     end
   end
 end
