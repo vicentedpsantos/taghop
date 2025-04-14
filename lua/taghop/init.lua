@@ -81,9 +81,12 @@ function M.list_tagged_files()
   vim.api.nvim_buf_set_option(buf, 'modifiable', false)
   vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
   
-  -- Calculate window size and position
-  local width = 80
-  local height = #lines
+  -- Calculate window size and position (50% width, 60% height)
+  local width = math.floor(vim.o.columns * 0.5)
+  local height = math.floor(vim.o.lines * 0.6)
+  -- Ensure we have enough height for all lines, with some margin
+  height = math.max(height, #lines + 2)
+  
   local win_opts = {
     relative = "editor",
     width = width,
