@@ -16,7 +16,7 @@ A Neovim plugin that lets you quickly jump between "tagged" files in your curren
 
 ```lua
 use {
-  'yourusername/taghop.nvim',
+  'vicentedpsantos/taghop.nvim',
   config = function()
     require('taghop').setup()
   end
@@ -27,7 +27,7 @@ use {
 
 ```lua
 {
-  'yourusername/taghop.nvim',
+  'vicentedpsantos/taghop.nvim',
   config = function()
     require('taghop').setup()
   end
