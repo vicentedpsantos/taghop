@@ -138,6 +138,9 @@ end
 -- Jump to a file by its index in the tagged files list
 function M.jump_to_file(index)
   if M.tagged_files[index] then
+    -- Close the list window first
+    vim.cmd('q')
+    -- Then open the file in a new buffer
     vim.cmd('edit ' .. vim.fn.fnameescape(M.tagged_files[index]))
   else
     vim.notify("Invalid file index", vim.log.levels.ERROR)
