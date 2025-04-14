@@ -1,18 +1,27 @@
 local M = {}
 
 M.config = {
-  max_tags = 10
+  max_tags = 10,
+  persistent = false
 }
 
 function M.setup(opts)
   opts = opts or {}
-  
+
   if opts.max_tags then
     M.config.max_tags = opts.max_tags
   end
-  
+
+  if opts.persistent ~= nil then
+    M.config.persistent = opts.persistent
+  end
+
   require('taghop.commands').setup()
-  
+
+  if M.config.persistent then
+    require('taghop.persistence').load_tags()
+  end
+
   return M
 end
 

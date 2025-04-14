@@ -1,6 +1,6 @@
 # TagHop.nvim
 
-A Neovim plugin that lets you quickly jump between "tagged" files in your current workflow.
+A lightweight Neovim plugin for developers that lets you tag and quickly navigate between files in your current workflow. TagHop allows you to mark up to 10 files as part of your active context and seamlessly jump between them with minimal keystrokes.
 
 ## Features
 
@@ -8,6 +8,7 @@ A Neovim plugin that lets you quickly jump between "tagged" files in your curren
 - List all tagged files in a floating window
 - Jump to any tagged file with a single keypress
 - Untag files from the list or while viewing them
+- Optional persistence of tagged files per project
 - Simple and lightweight
 
 ## Installation
@@ -40,9 +41,17 @@ TagHop works out of the box, but you can customize it:
 
 ```lua
 require('taghop').setup({
-  max_tags = 10, -- Maximum number of files that can be tagged (default: 10)
+  max_tags = 10,       -- Maximum number of files that can be tagged (default: 10)
+  persistent = false,  -- Whether to save tagged files between sessions (default: false)
 })
 ```
+
+### Persistence
+
+When `persistent = true`, TagHop will:
+- Save your tagged files when you tag/untag files and when you exit Neovim
+- Restore your tagged files when you start Neovim again in the same project
+- Organize saved tags by project (based on Git root or current working directory)
 
 ## Usage
 
@@ -76,6 +85,7 @@ When the file list is open:
 3. When you need to switch between these files, use `:TagHopList`
 4. Select the file you want to jump to by pressing its number
 5. When you're done with a file, untag it with `:TagHopUntag`
+6. If persistence is enabled, your tagged files will be available the next time you open Neovim in the same project
 
 ## License
 
