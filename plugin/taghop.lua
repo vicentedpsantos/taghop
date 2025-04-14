@@ -1,0 +1,11 @@
+-- plugin/taghop.lua
+-- Plugin registration script for TagHop
+
+-- Check if Neovim version is compatible
+if vim.fn.has('nvim-0.7.0') == 0 then
+  vim.api.nvim_err_writeln('TagHop requires at least Neovim v0.7.0')
+  return
+end
+
+-- Load the plugin
+require('taghop')
