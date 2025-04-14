@@ -104,7 +104,7 @@ function M.list_tagged_files()
   vim.api.nvim_win_set_option(win, 'winblend', 10)
   vim.api.nvim_win_set_option(win, 'cursorline', true)
   
-  -- Set keymaps for the buffer
+  -- Set up keymaps for the buffer
   local function set_keymap(key, action)
     vim.api.nvim_buf_set_keymap(buf, 'n', key, action, {
       noremap = true,
@@ -123,7 +123,7 @@ function M.list_tagged_files()
     set_keymap('0', [[<cmd>lua require('taghop').jump_to_file(10)<CR>]])
   end
   
-  -- Set up 'u' + number keys for untagging files
+  -- Set up 'u' followed by number keys for untagging files
   for i = 1, math.min(9, #M.tagged_files) do
     set_keymap('u' .. tostring(i), string.format([[<cmd>lua require('taghop').untag_file_by_index(%d)<CR>]], i))
   end
@@ -155,10 +155,18 @@ function M.untag_file_by_index(index)
   if M.tagged_files[index] then
     local file = M.tagged_files[index]
     table.remove(M.tagged_files, index)
-    vim.notify("Untagged: " .. vim.fn.fnamemodify(file, ':~:.'), vim.log.levels.INFO)
-    -- Refresh the UI
+    
+    -- Store current buffer number to reopen the list later
+    local current_buffer = vim.api.nvim_get_current_buf()
+    
+    -- Close the current window
     vim.cmd('q')
+    
+    -- Reopen the list
     M.list_tagged_files()
+    
+    -- Show notification
+    vim.notify("Untagged: " .. vim.fn.fnamemodify(file, ':~:.'), vim.log.levels.INFO)
   else
     vim.notify("Invalid file index", vim.log.levels.ERROR)
   end
