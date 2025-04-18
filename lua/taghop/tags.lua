@@ -25,6 +25,10 @@ function M.tag_current_file()
   if config.persistent then
     require('taghop.persistence').save_tags()
   end
+
+  if config.show_indicators then
+    require('taghop.visual').update_current_buffer()
+  end
 end
 
 function M.untag_current_file()
@@ -41,6 +45,10 @@ function M.untag_current_file()
         require('taghop.persistence').save_tags()
       end
 
+      if config.show_indicators then
+        require('taghop.visual').update_current_buffer()
+      end
+
       return
     end
   end
@@ -50,7 +58,9 @@ end
 
 function M.jump_to_file(index)
   if M.tagged_files[index] then
+    -- Close the list window first
     vim.cmd('q')
+    -- Then open the file in a new buffer
     vim.cmd('edit ' .. vim.fn.fnameescape(M.tagged_files[index]))
   else
     vim.notify("Invalid file index", vim.log.levels.ERROR)
@@ -72,6 +82,11 @@ function M.untag_file_by_index(index)
 
     if config.persistent then
       require('taghop.persistence').save_tags()
+    end
+
+    if config.show_indicators and vim.fn.bufexists(file) == 1 then
+      -- Update visual indicators for all buffers
+      require('taghop.visual').update_all_buffers()
     end
   else
     vim.notify("Invalid file index", vim.log.levels.ERROR)
