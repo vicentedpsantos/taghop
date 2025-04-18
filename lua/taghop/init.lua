@@ -2,7 +2,8 @@ local M = {}
 
 M.config = {
   max_tags = 10,
-  persistent = false
+  persistent = false,
+  show_indicators = true
 }
 
 function M.setup(opts)
@@ -16,10 +17,21 @@ function M.setup(opts)
     M.config.persistent = opts.persistent
   end
 
+  if opts.show_indicators ~= nil then
+    M.config.show_indicators = opts.show_indicators
+  end
+
   require('taghop.commands').setup()
+
+  -- Clear any existing tags before loading from storage
+  require('taghop.tags').tagged_files = {}
 
   if M.config.persistent then
     require('taghop.persistence').load_tags()
+  end
+
+  if M.config.show_indicators then
+    require('taghop.visual').setup()
   end
 
   return M
@@ -43,6 +55,10 @@ end
 
 function M.untag_file_by_index(index)
   require('taghop.tags').untag_file_by_index(index)
+end
+
+function M.toggle_indicators()
+  require('taghop.visual').toggle()
 end
 
 return M

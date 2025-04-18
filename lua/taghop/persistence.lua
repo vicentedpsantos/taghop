@@ -3,16 +3,19 @@ local M = {}
 function M.get_project_root()
   local cwd = vim.fn.getcwd()
 
+  -- Try to find Git directory
   local git_dir = vim.fn.finddir('.git', cwd .. ';')
   if git_dir ~= "" then
     return vim.fn.fnamemodify(git_dir, ':h')
   end
 
+  -- If no Git directory, use CWD as project root
   return cwd
 end
 
 function M.get_project_id(project_path)
   local project_name = vim.fn.fnamemodify(project_path, ':t')
+
   local utils = require('taghop.utils')
   local path_hash = utils.simple_hash(project_path)
 
@@ -27,9 +30,12 @@ function M.get_storage_path()
     vim.fn.mkdir(taghop_dir, 'p')
   end
 
+  -- Get absolute project root path
   local project_root = M.get_project_root()
+
+  -- Create a unique but readable project identifier
   local project_id = M.get_project_id(project_root)
-  
+
   return taghop_dir .. '/' .. project_id .. '.json'
 end
 
@@ -37,16 +43,16 @@ function M.save_tags()
   if not require('taghop').config.persistent then
     return
   end
-
+  
   local tags = require('taghop.tags')
   local storage_path = M.get_storage_path()
-
+  
   local file = io.open(storage_path, 'w')
   if not file then
     vim.notify('TagHop: Failed to save tags', vim.log.levels.ERROR)
     return
   end
-
+  
   local json_str = vim.fn.json_encode(tags.tagged_files)
   file:write(json_str)
   file:close()
